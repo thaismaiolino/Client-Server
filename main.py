@@ -1,33 +1,43 @@
 from threading import Thread
+import random
 
 filename = 'matriz.txt'
-# LER O FILE
-# VERIFICAR SE TEM 2 MATRIZES DENTRO DELE
-# RECEBER ESSAS 2 MATRIZES DO CHECKMATRIZ
+
 def readFile():
     file = open(filename, 'r')
-    checkMatriz(file)
-    # print(file.read())
+    preMa1 = file.readline()
+    preMa2 = file.readline()
+    file.close()
 
-# CHECAR SE TEM 2 MATRIZES E USAR O METODO DE ISQUARE PRA VER SE NAO QUADRATICAS
-def checkMatriz(file):
-    col = file.readline()
-    file.closed
+    preMa1 = preMa1[:-2].split(',')
+    preMa2 = preMa2[:-1].split(',')
 
-    num = len(col.split(' '))
-    matriz = []
+    ma1 = []
+    ma2 = []
+    for i in range(len(preMa1)):
+        item = preMa1[i].split(' ')
 
-    for col in file.read():
-        print col
-        if not col.startswith('\n'):
-            matriz.append(col)
-        else:
-            matriz = []
+        for idx, val in enumerate(preMa1[i].split(' ')):
+            aux = int(val)
+            item.pop(idx)
+            item.insert(idx , aux)
 
-    print (matriz)
+        ma1.append(item)
 
-def isSquare (matrix):
-    return all (len (row) == len (matrix) for row in matrix)
+    for i in range(len(preMa2)):
+        item = preMa2[i].split(' ')
+
+        for idx, val in enumerate(preMa2[i].split(' ')):
+
+            aux = int(val)
+            item.pop(idx)
+            item.insert(idx , aux)
+
+        ma2.append(item)
+
+
+    return (ma1,ma2)
+
 
 
 def sumMatrix(ma1, ma2):
@@ -43,9 +53,12 @@ def sumMatrix(ma1, ma2):
             result[i].append(sum)
 
     file = open("soma.txt", "w")
-    file.write(result)
+    for item in result:
+        file.write(str(item))
     file.close()
+    print (result)
     return result
+
 
 def multMatrix(ma1, ma2):
     result = []
@@ -54,18 +67,69 @@ def multMatrix(ma1, ma2):
     cols = len(ma1[0])
 
     for i in range(lines):
-        result.append([])
+        aux = []
         for j in range(cols):
             mult = 0
             for k in range(len(ma2)):
                 mult = mult + ma1[i][k]*ma2[k][j]
-            result.append(mult)
+            aux.append(mult)
+            # aux = str(mult)
+        result.append(aux)
 
 
     file = open("multiplica.txt", "w")
-    file.write(result)
+    for item in result:
+        file.write(str(item))
     file.close()
+
     return result
+
+def generatingMatrix(m):
+    ma1 = []
+    ma2 = []
+    for i in range(m):
+        auxMa1 = []
+        auxMa2 = []
+        for j in range(m):
+
+            numMa1 = random.randint(0, 100)
+            numMa2 = random.randint(0, 100)
+            auxMa1.append(numMa1)
+            auxMa2.append(numMa2)
+
+        ma1.append(auxMa1)
+        ma2.append( auxMa2)
+
+    return ma1, ma2
+
+def generatingMatrix2(m):
+    file = open(filename, 'w')
+    for i in range(m):
+        for j in range(m):
+            num = random.randint(0, 100)
+            file.write(str(num))
+            if j < m-1:
+                file.write( ' ')
+        file.write(',')
+    file.write('\n')
+    for i in range(m):
+        for j in range(m):
+            num = random.randint(0, 100)
+            file.write(str(num))
+            if j < m -1:
+                file.write(' ')
+        file.write(',')
+    file.close()
+
+
+
+def writeMatrix(m):
+    matrix = generatingMatrix(m)
+    file = open(filename, 'w')
+    for item in matrix:
+        file.write(str(item))
+    file.close()
+
 
 def executeThreads(ma1,ma2):
     try:
@@ -74,4 +138,11 @@ def executeThreads(ma1,ma2):
     except:
         print "Error: unable to start thread"
 
+
+# writeMatrix(4)
+# generatingMatrix2(3)
+ma1, ma2 = readFile()
+
+
+sumMatrix(ma1, ma2)
 
