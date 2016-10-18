@@ -1,5 +1,8 @@
 from threading import Thread
 import random
+import time
+import socket
+from sys import argv,exit
 
 filename = 'matriz.txt'
 
@@ -59,7 +62,6 @@ def sumMatrix(ma1, ma2):
     print (result)
     return result
 
-
 def multMatrix(ma1, ma2):
     result = []
 
@@ -85,24 +87,6 @@ def multMatrix(ma1, ma2):
     return result
 
 def generatingMatrix(m):
-    ma1 = []
-    ma2 = []
-    for i in range(m):
-        auxMa1 = []
-        auxMa2 = []
-        for j in range(m):
-
-            numMa1 = random.randint(0, 100)
-            numMa2 = random.randint(0, 100)
-            auxMa1.append(numMa1)
-            auxMa2.append(numMa2)
-
-        ma1.append(auxMa1)
-        ma2.append( auxMa2)
-
-    return ma1, ma2
-
-def generatingMatrix2(m):
     file = open(filename, 'w')
     for i in range(m):
         for j in range(m):
@@ -122,16 +106,8 @@ def generatingMatrix2(m):
     file.close()
 
 
-
-def writeMatrix(m):
-    matrix = generatingMatrix(m)
-    file = open(filename, 'w')
-    for item in matrix:
-        file.write(str(item))
-    file.close()
-
-
-def executeThreads(ma1,ma2):
+def executeThreads(file):
+    ma1, ma2 = file
     try:
         Thread.start_new_thread( multMatrix(ma1, ma2), ("TH-1", 2, ) )
         Thread.start_new_thread( sumMatrix(ma1, ma2), ("TH-2", 4, ) )
@@ -139,10 +115,54 @@ def executeThreads(ma1,ma2):
         print "Error: unable to start thread"
 
 
-# writeMatrix(4)
-# generatingMatrix2(3)
-ma1, ma2 = readFile()
 
 
-sumMatrix(ma1, ma2)
+def enviaArquivo(size, connectionType):
+    generatingMatrix(size)
+    file = readFile()
+    print (file)
+    connectionType.send(file)
+    connectionType.close
+
+def client():
+    HOST = '127.0.0.1'     # Endereco IP do Servidor
+    PORT = 4040            # Porta que o Servidor esta
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    dest = (HOST, PORT)
+    tcp.connect(dest)
+    print ('Digite um numero inteiro:')
+    num = raw_input()
+    enviaArquivo(num, tcp)
+
+
+def servidor():
+    HOST = ''              # Endereco IP do Servidor
+    PORT = 4040            # Porta que o Servidor esta
+
+    def conectado(con, cliente):
+        print 'Conectado por', cliente
+
+        while True:
+            msg = con.recv(1024)
+            if not msg: break
+            print cliente, msg
+
+        print 'Finalizando conexao do cliente', cliente
+        con.close()
+        Thread.exit()
+
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    orig = (HOST, PORT)
+
+    tcp.bind(orig)
+    tcp.listen(1)
+
+    while True:
+        con, cliente = tcp.accept()
+        executeThreads(con)
+        con.close()
+        Thread.exit()
+
+    tcp.close()
 

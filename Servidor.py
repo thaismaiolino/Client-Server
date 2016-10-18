@@ -1,5 +1,6 @@
 from threading import Thread
 import socket
+import datetime
 
 filename = 'newmatriz.txt'
 
@@ -54,7 +55,7 @@ def sumMatrix(ma1, ma2):
     for item in result:
         file.write(str(item))
     file.close()
-    print (result)
+    # print (result)
     return result
 
 def multMatrix(ma1, ma2):
@@ -99,8 +100,6 @@ tcp.listen(1)
 newfile = open(filename, 'w')
 while True:
     con, cliente = tcp.accept()
-    print con
-    print cliente
 
     data = con.recv(500)
     if not data:
@@ -110,10 +109,41 @@ while True:
     newfile.close()
 
     ma1, ma2 = readFile()
-    print ma1, ma2
+    # print ma1, ma2
+
+    global th1TimeStart
+    th1TimeStart = datetime.datetime.now()
+    print ('TH1 - Tempo inicial:')
+    print (str(getattr(th1TimeStart, 'hour'))+'h'+str (getattr(th1TimeStart, 'minute'))+'m'+str(getattr(th1TimeStart, 'second'))+'s'+str(getattr(th1TimeStart, 'microsecond'))+'ms')
 
     th1 = Thread(target= multMatrix, args=(ma1, ma2) ).start()
+
+    global th1TimeFinish
+    th1TimeFinish = datetime.datetime.now()
+    print ('TH1 - Tempo final:')
+    print (str(getattr(th1TimeFinish, 'hour'))+'h'+str (getattr(th1TimeFinish, 'minute'))+'m'+str(getattr(th1TimeFinish, 'second'))+'s'+str(getattr(th1TimeFinish, 'microsecond'))+'ms')
+
+
+
+    global th2TimeStart
+    th2TimeStart = datetime.datetime.now()
     th2 = Thread(target= sumMatrix , args= (ma1, ma2) ).start()
+    print ('TH2 - Tempo inicial:')
+    print (str(getattr(th2TimeStart, 'hour'))+'h'+str (getattr(th2TimeStart, 'minute'))+'m'+str(getattr(th2TimeStart, 'second'))+'s'+str(getattr(th2TimeStart, 'microsecond'))+'ms')
+
+    global th2TimeFinish
+    th2TimeFinish = datetime.datetime.now()
+    print ('TH2 - Tempo final:')
+    print (str(getattr(th2TimeFinish, 'hour'))+'h'+str (getattr(th2TimeFinish, 'minute'))+'m'+str(getattr(th2TimeFinish, 'second'))+'s'+str(getattr(th2TimeFinish, 'microsecond'))+'ms')
+
+    th1total = th1TimeFinish - th1TimeStart
+    print ('TH1 - Tempo total:')
+    print th1total
+   
+    th2total = th2TimeFinish - th2TimeStart
+    print ('TH2 - Tempo total:')
+    print th2total
+
 
     readByte = open('multiplica.txt', "rb")
     dataMult = readByte.read()
@@ -128,7 +158,9 @@ while True:
     con.send(dataSoma)
 
 con.close()
+
 th1.exit()
+
 th2.exit()
 
 

@@ -126,6 +126,4 @@ while True:
     if not dataRecv:
         break
 
-
-
 tcp.close
