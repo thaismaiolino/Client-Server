@@ -171,13 +171,4 @@ th1.exit()
 
 th2.exit()
 
-
-
-
 tcp.close()
-
-
-import pyttsx
-engine = pyttsx.init()
-engine.say(Hello love. Why are you sleeping? Luisa Luisa talk to me)
-engine.runAndWait()
