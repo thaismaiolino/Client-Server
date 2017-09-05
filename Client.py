@@ -121,9 +121,13 @@ while True:
 
     tcp.send(data)
 
-    dataRecv = tcp.recv(500)
+    dataRecv = tcp.recv(4096)
+
     print dataRecv
+
     if not dataRecv:
+
         break
+
 
 tcp.close
